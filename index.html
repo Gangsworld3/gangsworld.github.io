@@ -228,10 +228,87 @@
             color: #6c9e6c;
         }
 
+        /* Live CLI Terminal Styles */
+        .live-terminal {
+            background: #0b0e0b;
+            border: 1px solid #2e6b2e;
+            border-radius: 20px;
+            margin: 2rem 0;
+            box-shadow: 0 0 20px rgba(0,255,0,0.1);
+            overflow: hidden;
+        }
+        .term-header {
+            background: #0f1a0f;
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid #2e6b2e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        .term-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        .term-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #5f9e4e;
+        }
+        .term-btn.red { background: #a55353; }
+        .term-btn.yellow { background: #c9a03d; }
+        .term-title {
+            flex: 1;
+            text-align: center;
+            color: #8bc34a;
+            font-weight: 600;
+        }
+        .term-body {
+            padding: 1rem;
+            background: #030503;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #aaffaa;
+            height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .term-line {
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: 4px;
+        }
+        .term-input-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .term-prompt {
+            color: #7bc96f;
+            white-space: nowrap;
+        }
+        .term-input {
+            background: transparent;
+            border: none;
+            color: #aaffaa;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            flex: 1;
+            outline: none;
+        }
+        .term-input:focus {
+            outline: none;
+        }
         @media (max-width: 700px) {
             .hero h1 { font-size: 2rem; }
             .project-grid { grid-template-columns: 1fr; }
             .terminal-container { padding: 1rem; }
+            .term-body { height: 250px; }
         }
         .tagline {
             font-family: 'Space Grotesk', sans-serif;
@@ -248,7 +325,7 @@
     <!-- Terminal header vibe -->
     <div class="prompt-bar">
         <div class="dev-path">
-            <i class="fas fa-terminal"></i> gangsworld@hackerlab:~<span style="color:#c6f0c6">/projects</span><span class="cursor-blink"></span>
+            <i class="fas fa-terminal"></i> Gangsworld HackerLab:~<span style="color:#c6f0c6">/projects</span><span class="cursor-blink"></span>
         </div>
         <div class="badge">
             <i class="fas fa-skull"></i> ROOT ACCESS // BUILDER MODE
@@ -261,7 +338,7 @@
         <p>Building open‑source weapons for the creator economy. <span class="glow-text">AI, automation, and zero‑BS tools.</span> Every project is crafted to give influencers, streamers, and video creators the unfair advantage.</p>
         <div style="margin-top: 1rem;">
             <span class="badge"><i class="fab fa-github"></i> github.com/Gangsworld3</span>
-            <span class="badge" style="margin-left: 10px;"><i class="fas fa-code-branch"></i> 20+ tools · 100% open core</span>
+            <span class="badge" style="margin-left: 10px;"><i class="fas fa-code-branch"></i> 20+ Tools And More Upcoming · 100% open core</span>
         </div>
     </div>
 
@@ -282,6 +359,29 @@
             <a href="#" class="btn-github" style="background:transparent;"><i class="fas fa-play"></i> Watch Demo</a>
         </div>
         <p class="matrix-code" style="margin-top: 1rem;"><i class="fas fa-robot"></i> locally processed · whisperX + ffmpeg + opencv · open‑source alternative to Opus Clip</p>
+    </div>
+
+    <!-- LIVE CLI DEMO SECTION -->
+    <div class="live-terminal">
+        <div class="term-header">
+            <div class="term-buttons">
+                <div class="term-btn red"></div>
+                <div class="term-btn yellow"></div>
+                <div class="term-btn"></div>
+            </div>
+            <div class="term-title">viralclip-swarm — interactive demo</div>
+        </div>
+        <div class="term-body" id="term-body">
+            <div class="term-line">ViralClip Swarm CLI (simulation) — type 'help' for commands</div>
+            <div class="term-line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            <div class="term-line">> ready</div>
+        </div>
+        <div style="padding: 0 1rem 1rem 1rem; background: #030503;">
+            <div class="term-input-line">
+                <span class="term-prompt">gangsworld@viralclip:~$</span>
+                <input type="text" class="term-input" id="cli-input" autofocus>
+            </div>
+        </div>
     </div>
 
     <!-- ALL 20 PROJECTS (main + 19 upcoming) -->
@@ -430,5 +530,162 @@
         <span style="font-size: 0.65rem;">#hackthecreator · trending on GitHub soon™</span>
     </footer>
 </div>
+
+<script>
+    // CLI Emulator Logic
+    const termBody = document.getElementById('term-body');
+    const cliInput = document.getElementById('cli-input');
+
+    // Function to add a line to the terminal
+    function addTermLine(text, isInput = false) {
+        const lineDiv = document.createElement('div');
+        lineDiv.className = 'term-line';
+        if (isInput) {
+            lineDiv.innerHTML = `<span class="term-prompt">gangsworld@viralclip:~$</span> ${escapeHtml(text)}`;
+        } else {
+            lineDiv.textContent = text;
+        }
+        termBody.appendChild(lineDiv);
+        // Auto-scroll to bottom
+        termBody.scrollTop = termBody.scrollHeight;
+    }
+
+    // Helper to escape HTML
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // Simulated responses
+    function processCommand(cmd) {
+        const trimmed = cmd.trim();
+        if (trimmed === '') return;
+
+        // Add the input line to output
+        addTermLine(cmd, true);
+
+        // Parse command
+        const parts = trimmed.split(/\s+/);
+        const mainCmd = parts[0];
+
+        if (mainCmd === 'help') {
+            addTermLine('Available commands:');
+            addTermLine('  help                          Show this help');
+            addTermLine('  --version                     Show ViralClip Swarm version');
+            addTermLine('  --url <youtube-url>           Analyze a video URL');
+            addTermLine('  --num-clips <number>          Set number of clips to generate (default 10)');
+            addTermLine('  --analyze                     Run analysis on the last provided URL');
+            addTermLine('  clear                         Clear terminal screen');
+            addTermLine('  exit / quit                   Exit demo (just a simulation)');
+            return;
+        }
+
+        if (mainCmd === '--version') {
+            addTermLine('ViralClip Swarm v0.9.0 (alpha)');
+            addTermLine('Built with WhisperX + FFmpeg + OpenCV');
+            addTermLine('License: AGPLv3');
+            return;
+        }
+
+        if (mainCmd === '--url') {
+            if (parts.length < 2) {
+                addTermLine('Error: Missing URL. Usage: --url <youtube-url>');
+                return;
+            }
+            const url = parts[1];
+            addTermLine(`✓ URL set: ${url}`);
+            addTermLine('→ Run `--analyze` to start processing.');
+            // Store URL in sessionStorage for later use
+            sessionStorage.setItem('viralclip_url', url);
+            return;
+        }
+
+        if (mainCmd === '--num-clips') {
+            if (parts.length < 2 || isNaN(parseInt(parts[1]))) {
+                addTermLine('Error: Invalid number. Usage: --num-clips <number>');
+                return;
+            }
+            const num = parseInt(parts[1]);
+            addTermLine(`✓ Number of clips set to ${num}`);
+            sessionStorage.setItem('viralclip_num', num);
+            return;
+        }
+
+        if (mainCmd === '--analyze') {
+            const storedUrl = sessionStorage.getItem('viralclip_url');
+            const storedNum = sessionStorage.getItem('viralclip_num') || 10;
+            if (!storedUrl) {
+                addTermLine('Error: No URL provided. Use `--url <youtube-url>` first.');
+                return;
+            }
+            addTermLine('🚀 Starting analysis...');
+            addTermLine(`   Video URL: ${storedUrl}`);
+            addTermLine('   - Downloading audio stream (simulated)');
+            addTermLine('   - Running WhisperX transcription...');
+            setTimeout(() => {
+                addTermLine('   ✓ Transcription complete (1,247 words)');
+                addTermLine('   - Detecting engagement peaks (laughter, loudness, chat velocity)...');
+                setTimeout(() => {
+                    addTermLine(`   ✓ Found ${storedNum} candidate moments`);
+                    addTermLine('   - Extracting clips and generating dynamic captions...');
+                    setTimeout(() => {
+                        addTermLine(`✅ Done! Exported ${storedNum} clips to ./output/`);
+                        addTermLine('   📁 Files: clip_1.mp4, clip_2.mp4, ...');
+                        addTermLine('   📊 Summary: Top clip has 92% engagement score');
+                        // Optionally clear stored URL to force new analysis next time
+                    }, 800);
+                }, 600);
+            }, 500);
+            return;
+        }
+
+        if (mainCmd === 'clear') {
+            // Clear terminal body except the initial welcome lines? We'll just remove all children
+            while (termBody.firstChild) {
+                termBody.removeChild(termBody.firstChild);
+            }
+            // Optionally re-add a welcome header
+            addTermLine('ViralClip Swarm CLI (simulation) — type \'help\' for commands');
+            addTermLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            addTermLine('> ready');
+            return;
+        }
+
+        if (mainCmd === 'exit' || mainCmd === 'quit') {
+            addTermLine('Exiting demo. (Refresh page to restart)');
+            cliInput.disabled = true;
+            return;
+        }
+
+        // Unknown command
+        addTermLine(`Command not recognized: ${trimmed}`);
+        addTermLine('Type "help" for available commands.');
+    }
+
+    // Event listener for input
+    cliInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const cmd = cliInput.value;
+            cliInput.value = '';
+            processCommand(cmd);
+        }
+    });
+
+    // Focus the input when clicking anywhere on terminal
+    const terminalDiv = document.querySelector('.live-terminal');
+    terminalDiv.addEventListener('click', function() {
+        cliInput.focus();
+    });
+    // Auto-focus on page load
+    window.addEventListener('load', function() {
+        cliInput.focus();
+    });
+</script>
 </body>
 </html>
